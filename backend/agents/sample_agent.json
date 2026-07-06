@@ -1,0 +1,8 @@
+{
+    "name": "sample_agent",
+    "llm":{
+        "provider":"openai",
+        "model":"gpt-4o"
+    },
+    "system_prompt": "You are a helpful assistant that provides information about the sample agent."
+}
