@@ -15,6 +15,7 @@
     "calculator",
     "current_time",
     "file_reader",
-    "websearch"
+    "websearch",
+    "filesystem"
   ]
 }
