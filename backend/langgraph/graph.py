@@ -1,8 +1,5 @@
-from typing import Annotated
-
 from langgraph.graph import END, START, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.graph.message import add_messages
 
 from backend.llm.manager import LLMManager
 from tools.manager import ToolManager
@@ -15,15 +12,23 @@ class AgentState(MessagesState):
 class AgentGraph:
     def __init__(self, config):
         self.config = config
-        self.llm = LLMManager(config).get_llm()
-        self.tools = ToolManager(config).get_tools()
-        self.llm_with_tools = self.llm.bind_tools(self.tools)
+        self.tools = []
+        self.llm_with_tools = None
 
     def chatbot(self, state: AgentState):
+        if self.llm_with_tools is None:
+            raise RuntimeError("Graph has not been built yet.")
+
         response = self.llm_with_tools.invoke(state["messages"])
         return {"messages": [response]}
 
-    def build(self):
+    async def build(self):
+        tool_manager = ToolManager(self.config)
+        self.tools = await tool_manager.get_tools()
+
+        llm = LLMManager(self.config).get_llm()
+        self.llm_with_tools = llm.bind_tools(self.tools)
+
         builder = StateGraph(AgentState)
 
         builder.add_node("chatbot", self.chatbot)

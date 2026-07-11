@@ -15,7 +15,9 @@
     "calculator",
     "current_time",
     "file_reader",
-    "websearch",
-    "filesystem"
-  ]
+    "websearch"
+  ],
+  "mcp_servers": [
+        "filesystem"
+    ]
 }

@@ -12,11 +12,15 @@ class LLMManager:
     }
 
     def __init__(self, config):
-        self.config = config
+        self.config = config or {}
 
     def get_llm(self):
-        provider = self.config["llm"]["provider"].lower()
-        model = self.config["llm"]["model"]
+        llm_config = self.config.get("llm") or {}
+        provider = str(llm_config.get("provider", "")).lower()
+        model = llm_config.get("model")
+
+        if not provider:
+            raise ValueError("LLM provider is missing from the agent config.")
 
         provider_class = self.PROVIDERS.get(provider)
 
@@ -26,5 +30,8 @@ class LLMManager:
                 f"Unsupported LLM provider: '{provider}'. "
                 f"Supported providers: {supported}"
             )
+
+        if not model:
+            raise ValueError("LLM model is missing from the agent config.")
 
         return provider_class(model).get_llm()

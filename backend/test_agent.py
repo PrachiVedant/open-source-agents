@@ -1,3 +1,4 @@
+import asyncio
 import sys
 from pathlib import Path
 
@@ -15,20 +16,26 @@ if str(ROOT_DIR) not in sys.path:
 from backend.agents.loader import AgentLoader
 from backend.langgraph.graph import AgentGraph
 
-# Load config
-config = AgentLoader.load("agents/sample_agent.json")
 
-# Build graph
-graph = AgentGraph(config).build()
+async def main():
+    # Load config
+    config = AgentLoader.load("agents/sample_agent.json")
 
-# Invoke graph
-response = graph.invoke(
-    {
-        "messages": [
-            HumanMessage(content="Say Hello using the hello_tool!"),
-        ],
-        "agent_config": config,
-    }
-)
+    # Build graph
+    graph = await AgentGraph(config).build()
 
-print(response["messages"][-1].content)
+    # Invoke graph
+    response = graph.invoke(
+        {
+            "messages": [
+                HumanMessage(content="Say Hello using the hello_tool!"),
+            ],
+            "agent_config": config,
+        }
+    )
+
+    print(response["messages"][-1].content)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
